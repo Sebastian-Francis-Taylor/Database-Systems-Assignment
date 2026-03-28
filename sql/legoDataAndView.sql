@@ -1,0 +1,98 @@
+USE legodb;
+
+-- Colors
+INSERT INTO Color (Name) VALUES
+('Red'), ('Blue'), ('Yellow'), ('Black'), ('White'),
+('Light Bluish Gray'), ('Dark Bluish Gray'), ('Reddish Brown'),
+('Trans-Clear'), ('Gold'), ('Flat Silver'), ('Tan'),
+('Dark Green'), ('Brown'), ('Orange');
+ 
+-- Items (Sets)
+INSERT INTO Item (ItemID, ItemName, YearReleased, YearEnd, ItemWeight, isLicensed) VALUES
+('75192', 'Millennium Falcon',   2017, NULL, 13150.00, 1),
+('71043', 'Hogwarts Castle',     2018, NULL,  7520.00, 1),
+('10305', 'Lion Knights Castle', 2022, NULL,  6060.00, 0),
+('10294', 'Titanic',             2021, NULL, 12600.00, 0),
+('21325', 'Medieval Blacksmith', 2021, NULL,  2420.00, 0),
+-- Items (Minifigs)
+('MF0001', 'Luke Skywalker',    2017, NULL, 12.00, 1),
+('MF0002', 'Darth Vader',       2010, NULL, 12.00, 1),
+('MF0003', 'Han Solo',          2017, NULL, 12.00, 1),
+('MF0004', 'Harry Potter',      2018, NULL, 12.00, 1),
+('MF0005', 'Hermione Granger',  2018, NULL, 12.00, 1),
+('MF0006', 'Castle Knight',     2022, NULL, 12.00, 0),
+('MF0007', 'Blacksmith',        2021, NULL, 12.00, 0),
+-- Items (Parts)
+('P00001', '2x4 Brick',           1958, NULL, 2.00, 0),
+('P00002', '1x2 Plate',           1958, NULL, 0.80, 0),
+('P00003', 'Minifig Head',         1978, NULL, 1.50, 0),
+('P00004', 'Minifig Torso',        1978, NULL, 2.00, 0),
+('P00005', 'Minifig Legs',         1978, NULL, 1.80, 0),
+('P00006', 'Minifig Hair (Brown)', 1990, NULL, 1.00, 0),
+('P00007', 'Sword',                1990, NULL, 1.60, 0),
+('P00008', 'Window 1x2x3',         1978, NULL, 2.20, 0);
+ 
+-- Sets
+INSERT INTO `Set` (ItemID) VALUES
+('75192'), ('71043'), ('10305'), ('10294'), ('21325');
+ 
+-- Minifigs
+INSERT INTO Minifig (ItemID) VALUES
+('MF0001'), ('MF0002'), ('MF0003'), ('MF0004'), ('MF0005'), ('MF0006'), ('MF0007');
+ 
+-- Parts
+INSERT INTO Part (ItemID, ColorName, isModified, isDecorated) VALUES
+('P00001', 'Red',               0, 0),
+('P00002', 'Light Bluish Gray', 0, 0),
+('P00003', 'Yellow',            0, 1),
+('P00004', 'Blue',              0, 1),
+('P00005', 'Black',             0, 0),
+('P00006', 'Brown',             0, 0),
+('P00007', 'Flat Silver',       0, 0),
+('P00008', 'Trans-Clear',       0, 0);
+ 
+-- Set_Parts
+INSERT INTO Set_Parts (SetItemID, PartItemID) VALUES
+('75192', 'P00001'), ('75192', 'P00002'), ('75192', 'P00007'),
+('71043', 'P00001'), ('71043', 'P00002'), ('71043', 'P00008'),
+('10305', 'P00001'), ('10305', 'P00007'), ('10305', 'P00008'),
+('10294', 'P00001'), ('10294', 'P00002'), ('10294', 'P00008'),
+('21325', 'P00001'), ('21325', 'P00002'), ('21325', 'P00007');
+ 
+-- Minifig_Parts
+INSERT INTO Minifig_Parts (MinifigItemID, PartItemID) VALUES
+('MF0001', 'P00003'), ('MF0001', 'P00004'), ('MF0001', 'P00005'), ('MF0001', 'P00006'),
+('MF0002', 'P00003'), ('MF0002', 'P00004'), ('MF0002', 'P00005'),
+('MF0003', 'P00003'), ('MF0003', 'P00004'), ('MF0003', 'P00005'), ('MF0003', 'P00006'),
+('MF0004', 'P00003'), ('MF0004', 'P00004'), ('MF0004', 'P00005'), ('MF0004', 'P00006'),
+('MF0005', 'P00003'), ('MF0005', 'P00004'), ('MF0005', 'P00005'), ('MF0005', 'P00006'),
+('MF0006', 'P00003'), ('MF0006', 'P00004'), ('MF0006', 'P00005'), ('MF0006', 'P00007'),
+('MF0007', 'P00003'), ('MF0007', 'P00004'), ('MF0007', 'P00005'), ('MF0007', 'P00006');
+ 
+-- Set_Minifigs
+INSERT INTO Set_Minifigs (SetItemID, MinifigItemID, Quantity) VALUES
+('75192', 'MF0001', 1), ('75192', 'MF0002', 1), ('75192', 'MF0003', 1),
+('71043', 'MF0004', 1), ('71043', 'MF0005', 1),
+('10305', 'MF0006', 3),
+('21325', 'MF0007', 2);
+ 
+-- All sets with their full item details
+CREATE VIEW View_Sets AS
+SELECT i.ItemID, i.ItemName, i.YearReleased, i.YearEnd, i.ItemWeight, i.isLicensed
+FROM Item i
+JOIN `Set` s ON i.ItemID = s.ItemID;
+ 
+-- All minifigs with their full item details
+CREATE VIEW View_Minifigs AS
+SELECT i.ItemID, i.ItemName, i.YearReleased, i.isLicensed
+FROM Item i
+JOIN Minifig m ON i.ItemID = m.ItemID;
+ 
+-- Which minifigs belong to which sets and in what quantity
+CREATE VIEW View_Set_Minifig_Details AS
+SELECT i.ItemName AS SetName, i2.ItemName AS MinifigName, sm.Quantity
+FROM Set_Minifigs sm
+JOIN `Set` s ON sm.SetItemID = s.ItemID
+JOIN Item i ON s.ItemID = i.ItemID
+JOIN Minifig m ON sm.MinifigItemID = m.ItemID
+JOIN Item i2 ON m.ItemID = i2.ItemID;
