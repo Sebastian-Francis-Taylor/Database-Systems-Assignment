@@ -53,7 +53,8 @@ CREATE TABLE Part (
 CREATE TABLE Set_Parts (
     SetItemID VARCHAR(8),
     PartItemID VARCHAR(8),
-    
+    Quantity INT NOT NULL DEFAULT 1,
+
     PRIMARY KEY (SetItemID, PartItemID),
     
     FOREIGN KEY (SetItemID) REFERENCES `Set`(ItemID)
@@ -78,7 +79,7 @@ CREATE TABLE Minifig_Parts (
 CREATE TABLE Set_Minifigs (
     SetItemID VARCHAR(8),
     MinifigItemID VARCHAR(8),
-    Quantity INT NOT NULL,
+    Quantity INT NOT NULL DEFAULT 1,
     
     PRIMARY KEY (SetItemID, MinifigItemID),
     
