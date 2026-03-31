@@ -1,16 +1,21 @@
 USE legodb;
 
+DROP FUNCTION IF EXISTS PartCount;
+DROP PROCEDURE IF EXISTS AddMinifigToSet;
+DROP PROCEDURE IF EXISTS RemoveMinifigFromSet;
+DROP TRIGGER IF EXISTS CheckYears;
+
 
 
 
 DELIMITER //
-CREATE FUNCTION PartCount(vsetItemID VARCHAR(8)) RETURNS INT
+CREATE FUNCTION PartCount(vSetItemID VARCHAR(8)) RETURNS INT
 BEGIN
-    DECLARE vcount INT;
+    DECLARE vCount INT;
     SELECT SUM(Quantity) INTO vCount FROM Set_Parts WHERE SetItemID = vSetItemID;
     RETURN vCount;
 END; //
-DELIMITER;
+DELIMITER ;
 
 
 
@@ -35,11 +40,11 @@ DELIMITER ;
 
 DELIMITER //
 CREATE TRIGGER CheckYears
-BEFORE  INSERT ON Item FOR EACH ROW
+BEFORE INSERT ON Item FOR EACH ROW
 BEGIN 
     IF NEW.YearEnd IS NOT NULL AND NEW.YearReleased IS NOT NULL AND NEW.YearEnd < NEW.YearReleased THEN 
-        SIGNAL SQLSTATE'45000' 
-    SET MESSAGE_TEXT 'YearEnd cannot be before YearReleased'
+        SIGNAL SQLSTATE '45000' 
+    SET MESSAGE_TEXT = 'YearEnd cannot be before YearReleased';
     END IF;
 END; //
 DELIMITER ;
